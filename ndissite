@@ -1,0 +1,28 @@
+#!/bin/bash
+if [ "$1" ]; then
+  #site argument is set
+	if [ -L /etc/nginx/sites-enabled/$1 ]; then
+		#symbolic link does not exist, enable the site
+		echo "Disabling nginx site $1!"
+		sudo rm /etc/nginx/sites-enabled/$1
+		sudo service nginx restart
+	else
+		#symbolic link exists, give the user a message
+		if [ -f /etc/nginx/sites-available/$1 ]; then
+			#site exists in sites-available
+			echo "-> Site already disabled! <-"
+		else
+			#site does not exist in sites-available
+			echo "-> Site not found! <-"
+		fi
+	fi
+else
+	#echo -e allows literal translation for tab character
+	echo -e "Avail |\tEnabled"
+	#list sites available and sites enabled in two columns
+	comm -2 <(ls /etc/nginx/sites-available) <(ls /etc/nginx/sites-enabled)
+	#prompt the user to enter a sitename from the enabled sites list
+	read -p "Which site would you like to disable? " site
+	#re-run the script with the site argument
+	ndissite $site
+fi

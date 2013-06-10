@@ -1,0 +1,24 @@
+#!/bin/bash
+if [ "$1" ]; then
+  #app argument is set
+	if [ -f /etc/uwsgi/apps-available/$1 ]; then
+		#app exists
+		if [ -L /etc/uwsgi/apps-enabled/$1 ]; then
+			#symlink exists
+			echo "-> App is already enabled! <-"
+		else
+			echo "Enabling uwsgi app $1!"
+			sudo ln -s /etc/uwsgi/apps-available/$1 /etc/uwsgi/apps-enabled/$1
+			sudo service uwsgi restart
+		fi
+	else
+		echo "-> App not found! <-"
+	fi
+else
+	#echo -e allows literal translation for tab character
+	echo -e "Avail |\tEnabled"
+	#list apps available and apps enabled in two columns
+	comm -2 <(ls /etc/uwsgi/apps-available) <(ls /etc/uwsgi/apps-enabled)
+	read -p "Which app would you like to enable? " app
+	uenapp $app
+fi
