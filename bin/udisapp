@@ -1,0 +1,28 @@
+#!/bin/bash
+if [ "$1" ]; then
+  #app argument is set
+	if [ -L /etc/uwsgi/apps-enabled/$1 ]; then
+		#symbolic link does not exist, enable the app
+		echo "Disabling uwsgi app $1!"
+		sudo rm /etc/uwsgi/apps-enabled/$1
+		sudo service uwsgi restart
+	else
+		#symbolic link exists, give the user a message
+		if [ -f /etc/uwsgi/apps-available/$1 ]; then
+			#app exists in apps-available
+			echo "-> App already disabled! <-"
+		else
+			#app does not exist in apps-available
+			echo "-> App not found! <-"
+		fi
+	fi
+else
+	#echo -e allows literal translation for tab character
+	echo -e "Avail |\tEnabled"
+	#list apps available and apps enabled in two columns
+	comm -2 <(ls /etc/uwsgi/apps-available) <(ls /etc/uwsgi/apps-enabled)
+	#prompt the user to enter a appname from the enabled apps list
+	read -p "Which app would you like to disable? " app
+	#re-run the script with the app argument
+	udisapp $app
+fi
