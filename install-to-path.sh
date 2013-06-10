@@ -2,7 +2,7 @@
 
 #clone the repository
 echo "Cloning nginx-uwsgi-helpers repository from Github"
-git clone git@github.com:NickWoodhams/nginx-uwsgi-helpers.git
+git clone https://github.com/NickWoodhams/nginx-uwsgi-helpers.git
 
 #make the executables, well... executable
 echo "Making helpers executable"
